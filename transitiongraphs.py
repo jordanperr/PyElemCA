@@ -27,5 +27,5 @@ for RULE in [54, 110]:
 		G.node_attr['shape']='point'
 		G.edge_attr['color']='red'
 		G.layout(prog="sfdp")
-		G.draw('./t_graphs/bigrun_sfdp_r{0}w{1:02d}.png'.format(RULE, WIDTH))
-		print('./t_graphs/bigrun_sfdp_r{0}w{1:02d}.png'.format(RULE, WIDTH))
+		G.draw('./outputs/t_graphs/bigrun_sfdp_r{0}w{1:02d}.png'.format(RULE, WIDTH))
+		print('./outputs/t_graphs/bigrun_sfdp_r{0}w{1:02d}.png'.format(RULE, WIDTH))

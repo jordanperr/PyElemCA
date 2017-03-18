@@ -2,8 +2,6 @@
 # For Independent Study, 3/1/2017
 
 import numpy as np
-from time import perf_counter as clk
-import matplotlib.pyplot as plt
 from scipy import stats
 
 class ElementaryCA_TransitionGraph:
@@ -46,6 +44,14 @@ class ElementaryCA_TransitionGraph:
 			# Append that bit to nextState
 			nextState.append(thisBit)
 		return tuple(nextState)
+		
+		
+	def traverse(self):
+		self.clearInternalState()
+		for i in range(2**self.width):
+			state = tuple([(i>>j)%2 for j in range(self.width)])
+			self.steps_until_repeat(state)
+		
 
 
 	def steps_until_repeat(self, state, cycle_edges=None, tail_edges=None):
