@@ -3,6 +3,8 @@
 
 import numpy as np
 from time import perf_counter as clk
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 from scipy import stats
 import pygraphviz as pgv
