@@ -1,3 +1,6 @@
+# Jordan Perr-Sauer
+# For Independent Study, 3/1/2017
+
 import numpy as np
 from time import perf_counter as clk
 import matplotlib.pyplot as plt
