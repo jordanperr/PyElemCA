@@ -12,8 +12,8 @@ import pygraphviz as pgv
 from elem_algos import *
 
 
-for RULE in [54, 110]:
-	for WIDTH in [14, 15, 16]:
+for RULE in range(0,256):
+	for WIDTH in range(9,10):
 		
 		CA = ElementaryCA_TransitionGraph(RULE, WIDTH)
 		
@@ -27,5 +27,5 @@ for RULE in [54, 110]:
 		G.node_attr['shape']='point'
 		G.edge_attr['color']='red'
 		G.layout(prog="sfdp")
-		G.draw('./outputs/t_graphs/bigrun_sfdp_r{0}w{1:02d}.png'.format(RULE, WIDTH))
-		print('./outputs/t_graphs/bigrun_sfdp_r{0}w{1:02d}.png'.format(RULE, WIDTH))
+		G.draw('./outputs/t_graphs/tgraphs_sfdp_r{0}w{1:02d}.png'.format(RULE, WIDTH))
+		print('./outputs/t_graphs/tgraphs_sfdp_r{0}w{1:02d}.png'.format(RULE, WIDTH))
