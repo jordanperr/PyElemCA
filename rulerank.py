@@ -3,6 +3,9 @@
 
 from elem_algos import *
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 
 # Let's calculate how many iterations it takes to determine the rule number.
 
@@ -11,7 +14,12 @@ pathLength = {}
 
 print("Rule | Width   |  % Of IVs Leading To Rule Identification")
 
-for RULE in [30, 110, 0]:
+for RULE in [0, 19, 20, 30, 54, 78, 105, 110]:
+	
+	# Plotting Code
+	x = []
+	y = []
+	
 	for WIDTH in [3,4,5,6,7,8,9,10,11,12,13,14,15]:
 		bitsKnown = []
 		pathLength = []
@@ -67,19 +75,33 @@ for RULE in [30, 110, 0]:
 			pathLength.append( steps )
 		
 		# percentage of IVs able to identify rule
-		ruleIdentifiers = sum([1 if bitsKnown[i]==8 else 0 for i in range(len(bitsKnown))])
-		print("{0:3}    {1:2}         {2:<10}".format(RULE, WIDTH, ruleIdentifiers/len(bitsKnown)))
+		#ruleIdentifiers = sum([1 if bitsKnown[i]==8 else 0 for i in range(len(bitsKnown))])
+		#y.append(ruleIdentifiers/len(bitsKnown))
+		#x.append(WIDTH)
+		#print("{0:3}    {1:2}         {2:<10}".format(RULE, WIDTH, ruleIdentifiers/len(bitsKnown)))
 		
 		# for IVs with full rule identification, average path length
-		#ruleIdentifiers = [pathLength[i] for i in range(len(bitsKnown)) if bitsKnown[i] == 8]
+		ruleIdentifiers = [pathLength[i] for i in range(len(bitsKnown)) if bitsKnown[i] == 8]
+		y.append(np.array(ruleIdentifiers).mean())
+		x.append(WIDTH)
 		#print("{0} {1} {2}".format(RULE, WIDTH, np.array(ruleIdentifiers).mean()))
 		
 		# for each step in path, how many bits were learned?
 		#averageBitsPerPathLength = [bitsKnown[i] / pathLength[i] for i in range(len(bitsKnown))]
 		#print("{0} {1} {2}".format(RULE, WIDTH, np.array(averageBitsPerPathLength).mean()))
 
-		#how many bits after 2 steps?
-
+		#how many bits after n steps?
+		
+	plt.cla()
+	plt.plot(x, y, 'o')
+	#plt.title("Percentage Of IVs Identifying Rule {0}".format(RULE))
+	#plt.xlabel("Width of IVs")
+	#plt.ylabel("Percentage of Rule Identifications")
+	plt.title("Average Path Length For IVs that Identify Rule {0}".format(RULE))
+	plt.xlabel("Width of IVs")
+	plt.ylabel("Average Path Length for Rule Identifiers")
+	plt.axis([3, 16, 0, 5])
+	plt.savefig("./outputs/ruleid/ruleidPathLength_rule{0}.png".format(RULE))
 
 	
 
