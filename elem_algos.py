@@ -4,11 +4,58 @@
 import numpy as np
 from scipy import stats
 
+class ElementaryHomogenousCA:
+
+	def __init__(self, rule, state):
+		self.rule = rule
+		self.state = state
+		
+		# Convenience parameters
+		self.width = len(state)
+		
+		
+	# Transition Function and Helpers
+	
+	# ElementaryHomogenousCA._neighbors(index)
+	# index = index of cell (1-D) for which you'd like the neighbors
+	# returns 3-tuple of neighbor indices (including index).
+	def _neighbors(self, index):
+		if index==0:
+			return (n-1, 0, 1)
+		if index==n-1:
+			return (n-2, n-1, 0)
+		else:
+			return (i-1, i, i+1)
+	
+	# ElementaryHomogenousCA._transition(state)
+	# index = index of cell (1-D) for which you'd like the neighbors
+	# returns 3-tuple of neighbor indices (including index).
+	def _transition(self):
+		nextState = []
+		for i in range(self.width):
+			neighbors = self._neighbors(i)
+			num = [self.state[neighbors[2-j]]*2**j for j in range(self.width)]
+			# Identify bit in RULE that corresponds to neighbor vector
+			thisBit = (self.rule >> num) % 2
+			# Append that bit to nextState
+			nextState.append(thisBit)
+		return tuple(nextState)
+	
+	def next(self):
+		self.state = self._transition()
+		return self.state
+
+
+	
+	
 class ElementaryCA_TransitionGraph:
 	
 	def __init__(self, rule, width):
+		# Properties of cellular automaton
 		self.rule = rule
 		self.width = width
+		# Helper variables for steps_until_repeat
+		# Call traverse() to update these.
 		self.distances = {}
 		self.cycles = []
 	
@@ -113,3 +160,5 @@ class ElementaryCA_TransitionGraph:
 		for i in range(2**WIDTH):
 			state = tuple([(i>>j)%2 for j in range(WIDTH)])
 			self.steps_until_repeat(state, cycle_edge, tail_edge)
+			
+		

@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
+import pickle
 
 # For a given rule and given width, generate average bits for all IVs.
 
@@ -21,7 +22,11 @@ def endless(l, i):
 
 print("Rule | Width   |  % Of IVs Leading To Rule Identification")
 
+x_global = []
+y_global = []
+
 for RULE in range(256):
+	print(RULE)
 	for WIDTH in [8]:
 		ca = ElementaryCA_TransitionGraph(RULE, WIDTH)
 		results = []
@@ -87,16 +92,18 @@ for RULE in range(256):
 			bits = [endless(r, i) for r in results]
 			y.append(np.array(bits).mean())
 		
-		x = range(1,max_time+1)
+		x_global.append(range(1,max_time+1))
 		
-		print(y)
-		plt.cla()
-		plt.plot(x, y, 'o')
-		plt.title("Average Number of Bits Known Rule {0} Width {1}".format(RULE, WIDTH))
-		plt.xlabel("Timestep")
-		plt.ylabel("Bits Known")
-		plt.axis([1, 12, 5.5, 8])
-		plt.savefig("./outputs/ruleid/avgRun/IVAvg_r{0}w{1}.png".format(RULE, WIDTH))
+		y_global.append(y)
+		
+		#print(y)
+		#plt.cla()
+		#plt.plot(x, y, 'o')
+		#plt.title("Average Number of Bits Known Rule {0} Width {1}".format(RULE, WIDTH))
+		#plt.xlabel("Timestep")
+		#plt.ylabel("Bits Known")
+		#plt.axis([1, 12, 5.5, 8])
+		#plt.savefig("./outputs/ruleid/avgRun/IVAvg_r{0}w{1}.png".format(RULE, WIDTH))
 		
 		
 		# percentage of IVs able to identify rule
@@ -113,7 +120,93 @@ for RULE in range(256):
 		#print("{0} {1} {2}".format(RULE, WIDTH, np.array(averageBitsPerPathLength).mean()))
 
 		#how many bits after n steps?
-		
 
+# Average graph by classes
+# Graphs whose
+	# Transients who ALWAYS die out in fixed steps (unrelated to input)
+	# Transients who ALWAYS die out in number of steps but related to input
+	# Transients who MAY NOT die out depending on the input
+			# Can you construct an input that gives you an arbitrarily long transient?
+	
+	# Steady states are periodic with fixed period not dependent on width
+	# Steady states are periodic only limited by input and width (non periodic for infinite)
+			# Are the steady states limited by the width of the automaton?
+			
+	# Gliders that do not collide become steady states immediately
+	# Gliders that do collide are only steady state once they are finished
+	# Gliders that collide more than we can deal with are never steady state (chaotic)
+	
+	# Finite / Infinite transient (depending on input? for random, every)
+	# Finite / Infinite steady state (depending on input? for random, every)
+	
+
+#notables: 25 is class 2 but has very long transient gliders. They just can't collide in such a way to propagate.
+# 26 has chaos under certain starting conditions, and order under others. Random, the ordered steady state wins out.
+# 37 has transients that die out but they have a different pattern than steady state. Patterns within transient
+
+#pickle.dump([x_global, y_global], "./outputs/ruleid/avg_width8.pickle")
+
+classes = {
+	1: [0,8,32,40,64,96,128,136,160,168,192,224,234,235,238,239,248,249,250,251,252,253,
+		254,255],
+	2: [1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,19,20,21,23,24,25,26,27,28,29,31,33,34,35,
+		36,37,38,39,41,42,43,44,46,47,48,49,50,51,52,53,55,56,57,58,59,61,62,63,65,66,67,
+		68,69,70,71,72,73,74,76,77,78,79,80,81,82,83,84,85,87,88,91,92,93,94,95,97,98,99,
+		100,103,104,107,108,109,111,112,113,114,115,116,117,118,119,121,123,125,127,130,
+		131,132,133,134,138,139,140,141,142,143,144,145,148,152,154,155,156,157,158,159,
+		162,163,164,167,170,171,172,173,174,175,176,177,178,179,180,181,184,185,186,187,
+		188,189,190,191,194,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,
+		211,212,213,214,215,216,217,218,219,220,221,222,223,226,227,228,229,230,231,233,
+		236,237,240,241,242,243,243,244,245,246,247],
+	3: [18,22,30,45,60,75,86,89,90,101,102,105,122,126,129,135,146,149,150,151,153,161,
+		165,182,183,195],
+	4: [54,106,110,120,124,137,147,169,193,225]
+}
+
+
+transient_layers = {
+	1: [0,1,2,3,4,5,6,10,12,0,15,16,17,18,19,22,23,26,27,28,29,34],
+	"many": [7, 8, 9,11,13,14,20,21,24,31,32,33,35,31],
+	"gliders": [25,30]
+}
+
+steady_state = {
+	1: [0,1,2,10,12,13,14,16,24,28,32,33,34],
+	"many": [3,5,6,7,9,11,15,17,18,19,20,21,22,23,25,26,27,29,30,31,35]
+}
+
+
+transient_layers_2 = {
+	"finite": [36],
+	"infinte": [35,37]
+}
+
+steady_state_2 = {
+	"finite": [35,36],
+	"infinte": []
+}
+
+
+for classno in classes:
+	y = []
+	y_max = []
+	y_min = []
+	trendlines = [y_global[i] for i in classes[classno]]
+	for i in range(len(trendlines[0])):
+		values = [j[i] for j in trendlines]
+		y.append(np.array(values).mean())
+		y_min.append(min(values))
+		y_max.append(max(values))
+	plt.cla()
+	plt.plot(x_global[0], y_max, '+', label="Maximum")
+	plt.plot(x_global[0], y, '-o', label="Average")
+	plt.plot(x_global[0], y_min, '+', label="Minimum")
+	plt.legend()
+	plt.axis([1, 12, 5.5, 8])
+	plt.title("Average Number of Bits Known Per Iteration Class {0} Width {1}".format(classno, 8))
+	plt.xlabel("Timestep")
+	plt.ylabel("Bits Known")
+	plt.savefig("./outputs/ruleid/avg_width8_class{0}.png".format(classno))
+	
 	
 
