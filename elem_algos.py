@@ -4,22 +4,35 @@
 import numpy as np
 from scipy import stats
 
-class ElementaryHomogenousCA:
 
-	def __init__(self, rule, state):
+
+class ElementaryHomogenousCA:
+	# Complies with Python 3 Generator Pattern
+	# Initialize with rule, state tuple, and optional iteration max
+	# Generates each new state (including initial state)
+	
+	def __init__(self, rule, state, iters=None):
+		# State
 		self.rule = rule
 		self.state = state
-		
+		self.iters = iters
 		# Convenience parameters
 		self.width = len(state)
+		# Settings
+		self.SHOW_IV = True
 		
-		
-	# Transition Function and Helpers
 	
-	# ElementaryHomogenousCA._neighbors(index)
-	# index = index of cell (1-D) for which you'd like the neighbors
-	# returns 3-tuple of neighbor indices (including index).
+	def __iter__(self):
+		return self
+	
+	
 	def _neighbors(self, index):
+		# ElementaryHomogenousCA._neighbors(index)
+		# index = index of cell (1-D) for which you'd like the neighbors
+		# returns 3-tuple of neighbor indices (including index).
+		
+		n = self.width
+		i = index
 		if index==0:
 			return (n-1, 0, 1)
 		if index==n-1:
@@ -27,24 +40,47 @@ class ElementaryHomogenousCA:
 		else:
 			return (i-1, i, i+1)
 	
-	# ElementaryHomogenousCA._transition(state)
-	# index = index of cell (1-D) for which you'd like the neighbors
-	# returns 3-tuple of neighbor indices (including index).
+	
 	def _transition(self):
+		# ElementaryHomogenousCA._transition(state)
+		# index = index of cell (1-D) for which you'd like the neighbors
+		# returns 3-tuple of neighbor indices (including index).
+		
 		nextState = []
 		for i in range(self.width):
-			neighbors = self._neighbors(i)
-			num = [self.state[neighbors[2-j]]*2**j for j in range(self.width)]
+			neighbors = [self.state[j] for j in self._neighbors(i)]
+			num = neighbors[2]*2**0 + neighbors[1]*2**1 + neighbors[0]*2**2
 			# Identify bit in RULE that corresponds to neighbor vector
 			thisBit = (self.rule >> num) % 2
 			# Append that bit to nextState
 			nextState.append(thisBit)
 		return tuple(nextState)
 	
-	def next(self):
-		self.state = self._transition()
-		return self.state
+	
+	def __next__(self):
+		if self.SHOW_IV:
+			self.SHOW_IV = False
+			return self.state
+		self.iters -= 1
+		if self.iters >= 0:
+			self.state = self._transition()
+			return self.state
+		else:
+			raise StopIteration()
 
+
+class TransitionGraph:
+
+	def __init__(self, rule, width):
+		# Parameters for Transition Graph
+		self.rule = rule
+		self.width = width
+		
+		# State Variables for Calculation
+		self.ca = None
+		self.distances = {}
+		self.cycles = []
+		
 
 	
 	

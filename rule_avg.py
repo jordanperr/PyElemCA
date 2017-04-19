@@ -146,6 +146,7 @@ for RULE in range(256):
 
 #pickle.dump([x_global, y_global], "./outputs/ruleid/avg_width8.pickle")
 
+#from wolframalpha.com
 classes = {
 	1: [0,8,32,40,64,96,128,136,160,168,192,224,234,235,238,239,248,249,250,251,252,253,
 		254,255],
