@@ -121,30 +121,6 @@ for RULE in range(256):
 
 		#how many bits after n steps?
 
-# Average graph by classes
-# Graphs whose
-	# Transients who ALWAYS die out in fixed steps (unrelated to input)
-	# Transients who ALWAYS die out in number of steps but related to input
-	# Transients who MAY NOT die out depending on the input
-			# Can you construct an input that gives you an arbitrarily long transient?
-	
-	# Steady states are periodic with fixed period not dependent on width
-	# Steady states are periodic only limited by input and width (non periodic for infinite)
-			# Are the steady states limited by the width of the automaton?
-			
-	# Gliders that do not collide become steady states immediately
-	# Gliders that do collide are only steady state once they are finished
-	# Gliders that collide more than we can deal with are never steady state (chaotic)
-	
-	# Finite / Infinite transient (depending on input? for random, every)
-	# Finite / Infinite steady state (depending on input? for random, every)
-	
-
-#notables: 25 is class 2 but has very long transient gliders. They just can't collide in such a way to propagate.
-# 26 has chaos under certain starting conditions, and order under others. Random, the ordered steady state wins out.
-# 37 has transients that die out but they have a different pattern than steady state. Patterns within transient
-
-#pickle.dump([x_global, y_global], "./outputs/ruleid/avg_width8.pickle")
 
 #from wolframalpha.com
 classes = {
@@ -165,31 +141,9 @@ classes = {
 }
 
 
-transient_layers = {
-	1: [0,1,2,3,4,5,6,10,12,0,15,16,17,18,19,22,23,26,27,28,29,34],
-	"many": [7, 8, 9,11,13,14,20,21,24,31,32,33,35,31],
-	"gliders": [25,30]
-}
-
-steady_state = {
-	1: [0,1,2,10,12,13,14,16,24,28,32,33,34],
-	"many": [3,5,6,7,9,11,15,17,18,19,20,21,22,23,25,26,27,29,30,31,35]
-}
-
-
-transient_layers_2 = {
-	"finite": [36],
-	"infinte": [35,37]
-}
-
-steady_state_2 = {
-	"finite": [35,36],
-	"infinte": []
-}
-
-
 for classno in classes:
 	y = []
+	y_error = []
 	y_max = []
 	y_min = []
 	trendlines = [y_global[i] for i in classes[classno]]
@@ -198,16 +152,32 @@ for classno in classes:
 		y.append(np.array(values).mean())
 		y_min.append(min(values))
 		y_max.append(max(values))
+		y_error.append(np.std(values))
+		
 	plt.cla()
-	plt.plot(x_global[0], y_max, '+', label="Maximum")
+
+	plt.errorbar(x_global[0], y, y_error, linestyle='None', marker='^')
 	plt.plot(x_global[0], y, '-o', label="Average")
-	plt.plot(x_global[0], y_min, '+', label="Minimum")
+	plt.plot(x_global[0], y_max, '-+', label="Maximum")
+	plt.plot(x_global[0], y_min, '-+', label="Minimum")
 	plt.legend()
+	plt.ylim(ymin=0)
 	plt.axis([1, 12, 5.5, 8])
 	plt.title("Average Number of Bits Known Per Iteration Class {0} Width {1}".format(classno, 8))
 	plt.xlabel("Timestep")
 	plt.ylabel("Bits Known")
 	plt.savefig("./outputs/ruleid/avg_width8_class{0}.png".format(classno))
+	
+	#plt.cla()
+	#plt.plot(x_global[0], y_max, '+', label="Maximum")
+	#plt.plot(x_global[0], y, '-o', label="Average")
+	#plt.plot(x_global[0], y_min, '+', label="Minimum")
+	#plt.legend()
+	#plt.axis([1, 12, 5.5, 8])
+	#plt.title("Average Number of Bits Known Per Iteration Class {0} Width {1}".format(classno, 8))
+	#plt.xlabel("Timestep")
+	#plt.ylabel("Bits Known")
+	#plt.savefig("./outputs/ruleid/avg_width8_class{0}.png".format(classno))
 	
 	
 

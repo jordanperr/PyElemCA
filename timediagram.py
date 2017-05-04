@@ -2,7 +2,7 @@
 # For Independent Study, 4/16/2017
 
 from PIL import Image, ImageDraw
-from random import random
+from random import random, seed
 from elem_algos import ElementaryHomogenousCA
 
 
@@ -27,7 +27,9 @@ def saveTimeDiagram(rule, steps, iv, output, boxwidth=2):
 		xoffset = 0
 		for bit in State:
 			color = "#000" if bit else "#FFF"
-			draw.rectangle([xoffset*boxwidth, t*boxwidth, (xoffset+1)*boxwidth+1, (t+1)*boxwidth+1], color)
+			draw.rectangle(
+				[xoffset*boxwidth, t*boxwidth, (xoffset+1)*boxwidth+1, (t+1)*boxwidth+1],
+				color)
 			xoffset = xoffset + 1
 		t = t+1
 	
@@ -42,9 +44,28 @@ if __name__ == "__main__":
 	parser.add_argument('rule', type=int, help='Wolfram-coded rule for elementary cellular automaton')
 	parser.add_argument('width', type=int, help='Width of image in cells')
 	parser.add_argument('steps', type=int, help='Height of image in cells')
-	parser.add_argument('outfile', help='Output file. Format inferred from extension.')
+	parser.add_argument('--initial', help='Initial state of cellular automata ex. 1100110')
+	parser.add_argument('--outfile', help='Output file. Format inferred from extension.')
+	parser.add_argument('--cellw', type=int, help='Width of each cell in pixels.')
+	parser.add_argument('--seed', type=int, help='Set the seed of PRNG.')
 	args = parser.parse_args()
 	
-	saveRandomTimeDiagram(args.rule, args.steps, args.width, args.outfile)
+	if args.seed:
+		seed(args.seed)
+	
+	
+	if args.initial:
+		iv = tuple([ int(i) for i in args.initial])
+		if args.cellw:
+			saveTimeDiagram(args.rule, args.steps, iv, args.outfile, args.cellw)
+		else:
+			saveTimeDiagram(args.rule, args.steps, iv, args.outfile)
+	else:
+		print(args.width)
+		if args.cellw:
+			saveRandomTimeDiagram(args.rule, args.steps, args.width, args.outfile, args.cellw)
+		else:
+			saveRandomTimeDiagram(args.rule, args.steps, args.width, args.outfile)
+	
 
 

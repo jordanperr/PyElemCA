@@ -91,7 +91,8 @@ for RULE in [0, 19, 20, 30, 54, 78, 105, 110]:
 		#print("{0} {1} {2}".format(RULE, WIDTH, np.array(averageBitsPerPathLength).mean()))
 
 		#how many bits after n steps?
-		
+	
+	
 	plt.cla()
 	plt.plot(x, y, 'o')
 	#plt.title("Percentage Of IVs Identifying Rule {0}".format(RULE))
